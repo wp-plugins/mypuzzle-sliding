@@ -21,7 +21,7 @@ Major features in this version include:
 * Change background color to fit your themes and layouts
 * Enable or disable hints to give some help
 
-For more details and examples visit the plugin page on <a href="http://mypuzzle.com/sliding/wordpress.html">Wordpress Sliding Plugin</a>
+For more details and examples visit the plugin page on <a href="http://mypuzzle.org/sliding/wordpress.html">Wordpress Sliding Plugin</a>
 
 == Installation ==
 
