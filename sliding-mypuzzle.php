@@ -42,14 +42,14 @@ function get_sliding_mp_options ($default = false){
             'showlink' => '0'
             );
 	if ($default) {
-		update_option('shc_op', $shc_default);
+		update_option('sliding_mp_set', $shc_default);
 		return $shc_default;
 	}
 	
-	$options = get_option('shc_op');
+	$options = get_option('sliding_mp_set');
 	if (isset($options))
 		return $options;
-	update_option('shc_op', $shc_default);
+	update_option('sliding_mp_set', $shc_default);
 	return $options;
 }
 
@@ -78,7 +78,7 @@ function sliding_mp($atts) {
                 'image' => $image,
                 'bgcolor' => $bgcolor,
                 'myimage' => $myimage,
-		'showlink' => $showlink,
+		'showlink' => $showlink
 	), $atts));
         $flash = plugins_url('sliding-plugin.swf', __FILE__);
         
@@ -152,14 +152,14 @@ function sliding_mp_options_page() {
                 
                 if ( $options != $newoptions ) {
                         $options = $newoptions;
-                        update_option('shc_op', $options);			
+                        update_option('sliding_mp_set', $options);			
                 }
 
  	} 
 
 	if(isset($_POST['Use_Default'])){
-        update_option('shc_op', $options);
-    }
+            update_option('sliding_mp_set', $options);
+        }
         $showlink = $options['showlink'];
 	$size = $options['size'];
 	$pieces = $options['pieces'];

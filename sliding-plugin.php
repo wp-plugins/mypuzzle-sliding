@@ -17,8 +17,11 @@ class slider
             $loadDir = plugins_url('img/', __FILE__);
         else
             $loadDir = '';
-        //$uploadDir = plugins_url('img/', __FILE__);
         $uploadDir = wp_upload_dir();
+        $uplDir = $uploadDir['path'].'/';
+        $dwnDir = $uploadDir['url'].'/';
+        //echo('uplDir='.$uplDir.'<br/>');
+        //echo('dwnDir='.$dwnDir.'<br/>');
         $image->load($loadDir.$inputImage);
         //get sizes
         $height = $image->getHeight();
@@ -30,9 +33,9 @@ class slider
         if ($isurl)
             $file_name = $myimage_filename;
         else
-            $file_name = $inputImage.'.'.$extension;
-        $image->save($uploadDir.$file_name);
-        return($uploadDir.$file_name);
+            $file_name = $inputImage;
+        $image->save($uplDir.$file_name);
+        return($dwnDir.$file_name);
 
     }
 
@@ -52,7 +55,6 @@ class SimpleImage {
    var $image_type;
  
    function load($filename) {
- 
       $image_info = getimagesize($filename);
       $this->image_type = $image_info[2];
       if( $this->image_type == IMAGETYPE_JPEG ) {
