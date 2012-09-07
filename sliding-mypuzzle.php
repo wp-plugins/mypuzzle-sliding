@@ -59,17 +59,27 @@ function get_sliding_mp_options ($default = false){
  
 add_shortcode('sliding-mp', 'sliding_mp');
 
+function sliding_mp_testRange($int,$min,$max) {     
+    return ($int>=$min && $int<=$max);
+}
+
 function sliding_mp($atts) {
 	global $post;
 	$options = get_sliding_mp_options();	
 	
 	$size = $options['size'];
+        if (!is_numeric($size) || !sliding_mp_testRange(intval($size),100,1000)) {$size=300;}
 	$pieces = $options['pieces'];
+        if (!is_numeric($pieces) || !sliding_mp_testRange(intval($pieces),3,5)) {$pieces=3;}
         $showhints = $options['showhints'];
+        if (!is_numeric($showhints) || !sliding_mp_testRange(intval($showhints),0,1)) {$showhints=1;}
         $image = $options['image'];
         $bgcolor = $options['bgcolor'];
+        $bgcolor = str_replace('#', '$preview', $bgcolor);
+        if (!preg_match('/^[a-f0-9]{6}$/i', $bgcolor)) $bgcolor = 'FFFFFF';
         $myimage = $options['myimage'];
         $showlink = $options['showlink'];
+        if (!is_numeric($showlink) || !sliding_mp_testRange(intval($showlink),0,1)) {$showlink=0;}
 
 	extract(shortcode_atts(array(
                 'size' => $size,
@@ -86,7 +96,7 @@ function sliding_mp($atts) {
         if ($pieces == '4') $image = 'slide-4x4.jpg';
         if ($pieces == '5') $image = 'slide-5x5.jpg';
         
-        $mySlider = new slider();
+        $mySlider = new sliding_mp_slider();
         if ($myimage != '')
         {
             $myPic = $mySlider->getResizedImage($myimage, true);
@@ -94,7 +104,9 @@ function sliding_mp($atts) {
         }
         else
             $myPic = $mySlider->getResizedImage($image, false);
-    
+        
+        if (!$myPic) return("Error: Url for <strong>'myimage={$myimage}'</strong> is not an image I can load! Please change settings.");
+        
         $output = "<div style='width:".$size."px'>";
         $output .= "<object id='myFlash' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'";
 	$output .= " codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0'";
@@ -110,10 +122,7 @@ function sliding_mp($atts) {
 	$output .= "    width='".$size."' height='".$size."' name='jigsaw' menu='false' align='middle' allowScriptAccess='sameDomain' ";
 	$output .= "    allowFullScreen='false' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' />\r";
 	$output .= "</object>\r";
-        if ($showlink == 1)
-        {
-            $output .= "<br/><a style=\"font-size: 10px\" href=\"http://mypuzzle.org/\">Puzzle Games</a>";
-        }
+        $output .= "<br/><a style=\"font-size: 10px\" href=\"http://mypuzzle.org/\">Puzzle Games</a>";
         $output .= "</div>";
         
         return($output);
