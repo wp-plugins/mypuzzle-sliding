@@ -5,20 +5,26 @@
  * and open the template in the editor.
  */
 
-class slider
+class sliding_mp_slider
 {
     function getResizedImage($inputImage, $isurl)
     {
         $extension = end(explode('.', $inputImage));
         $myimage_filename = end(explode('/', $inputImage));
 
-        $image = new SimpleImage();
+        $image = new sliding_mp_simpleImage();
         if (!$isurl)
             $loadDir = plugins_url('img/', __FILE__);
         else
             $loadDir = '';
-        //$uploadDir = plugins_url('img/', __FILE__);
         $uploadDir = wp_upload_dir();
+        $uplDir = $uploadDir['path'].'/';
+        $dwnDir = $uploadDir['url'].'/';
+        //echo('uplDir='.$uplDir.'<br/>');
+        //echo('dwnDir='.$dwnDir.'<br/>');
+        
+        if (!$image->isImage($loadDir.$inputImage)) return(false);
+        
         $image->load($loadDir.$inputImage);
         //get sizes
         $height = $image->getHeight();
@@ -30,9 +36,9 @@ class slider
         if ($isurl)
             $file_name = $myimage_filename;
         else
-            $file_name = $inputImage.'.'.$extension;
-        $image->save($uploadDir.$file_name);
-        return($uploadDir.$file_name);
+            $file_name = $inputImage;
+        $image->save($uplDir.$file_name);
+        return($dwnDir.$file_name);
 
     }
 
@@ -46,13 +52,12 @@ class slider
 
 }
 
-class SimpleImage {
+class sliding_mp_simpleImage {
  
    var $image;
    var $image_type;
  
    function load($filename) {
- 
       $image_info = getimagesize($filename);
       $this->image_type = $image_info[2];
       if( $this->image_type == IMAGETYPE_JPEG ) {
@@ -66,7 +71,31 @@ class SimpleImage {
          $this->image = imagecreatefrompng($filename);
       }
    }
-   function save($filename, $image_type=IMAGETYPE_JPEG, $compression=75, $permissions=null) {
+   function isImage($url) {
+        $params = array('http' => array('method' => 'HEAD'));
+        $ctx = stream_context_create($params);
+        $fp = @fopen($url, 'rb', false, $ctx);
+        if (!$fp)
+            return false;  // Problem with url      
+        $meta = stream_get_meta_data($fp);     
+        if ($meta === false) {         
+            fclose($fp);         
+            return false;  // Problem reading data from url     
+        }      
+        $wrapper_data = $meta["wrapper_data"];     
+        if(is_array($wrapper_data)) {       
+            foreach(array_keys($wrapper_data) as $hh) {           
+                if (substr($wrapper_data[$hh], 0, 19) == "Content-Type: image") // strlen("Content-Type: image") == 19            
+                {             
+                    fclose($fp);             
+                    return true;           
+                }       
+            }     
+        }      
+        fclose($fp);     
+        return false;
+   }
+   function save($filename, $image_type=IMAGETYPE_JPEG, $compression=100, $permissions=null) {
  
       if( $image_type == IMAGETYPE_JPEG ) {
          imagejpeg($this->image,$filename,$compression);
