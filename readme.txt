@@ -4,7 +4,7 @@ Donate link: http://mypuzzle.org
 Tags: Sliding, mypuzzle, puzzle, sliding puzzle, puzzle games, slide puzzle
 Requires at least: 2.5
 Tested up to: 3.4.1
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,8 @@ Fast and easy integration of sliding puzzles into your blogs.
 
 Major features in this version include: 
 
+* New! Use the included MyPuzzle Image Gallery and random startup images
+* New! Link your own Image Library
 * The sliding puzzles can be inserted everywhere: in your theme files, posts and pages.
 * Use your own image url and automatically get sliding puzzles for them
 * Three different levels 3x3, 4x4 and 5x5 are available 
@@ -28,7 +30,7 @@ For more details and examples visit the plugin page on <a href="http://mypuzzle.
 1. Upload 'Sliding Mypuzzle' folder to the '/wp-content/plugins/' directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Go to the MyPuzzle Sliding Options page under settings and save your prefered options.
-4. Use the Sudoku code "[sliding-mp]" to insert sliding puzzles into your posts/pages.
+4. Use the Sliding code "[sliding-mp]" to insert sliding puzzles into your posts/pages.
 
 The Sliding <a href="http://mypuzzle.org/">Puzzles Games</a> are provided by mypuzzle.org.
 
@@ -37,17 +39,22 @@ The Sliding <a href="http://mypuzzle.org/">Puzzles Games</a> are provided by myp
 Use the wordpress post shortcut [sliding-mp] for default setup or with parameter for individualizing for each post.
 Examples:
 - [sliding-mp]
-- [sliding-mp size=300 pieces=4 showhints=1 bgcolor='#ffffff' myimage='' showlink=1]
-- [sliding-mp size=400 pieces=3 showhints=0 bgcolor='#f4f4f4' myimage='http://mypuzzle.local/sliding/Hochzeit_Felix_470.JPG']
+- [sliding-mp size=400 pieces=4 showhints=1 bgcolor='#ffffff' myimage='' showlink=1]
+- [sliding-mp size=460 pieces=3 showhints=0 bgcolor='#f4f4f4' myimage='http://mypuzzle.org/jigsaw/img/animals-bunny.jpg']
+- [sliding-mp size=460 pieces=4 showhints=0 bgcolor='#f4f4f4' gallery='wp-content/uploads/myimages']
+
 
 Visit <a href="http://mypuzzle.org/sliding/wordpress.html">Wordpress Sliding Plugin</a>
 
 == Screenshots ==
 
-1. MyPuzzle Slidingdisplay
+1. MyPuzzle Sliding Screenshot
 
 == Changelog ==  
 
  = 1.0.0 =  
  * Initial release.
 
+ = 1.1.0 =  
+ * Added Gallery Feature for MyPuzzle Image Gallery
+ * Added Gallery Feature for Custom Image Path

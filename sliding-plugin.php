@@ -22,8 +22,8 @@ class sliding_mp_slider
         $dwnDir = $uploadDir['url'].'/';
         //echo('uplDir='.$uplDir.'<br/>');
         //echo('dwnDir='.$dwnDir.'<br/>');
-        
-        if (!$image->isImage($loadDir.$inputImage)) return(false);
+       
+        //if (!$image->isImage($loadDir.$inputImage)) return(false);
         
         $image->load($loadDir.$inputImage);
         //get sizes
@@ -37,6 +37,14 @@ class sliding_mp_slider
             $file_name = $myimage_filename;
         else
             $file_name = $inputImage;
+        
+//        if (!is_writable($uplDir.$file_name)) {
+//            echo('can not write: '.$uplDir.$file_name.'<br/>');
+//            return(false);
+//        } else {
+//            echo('can write: '.$uplDir.$file_name.'<br/>');
+//        }
+        
         $image->save($uplDir.$file_name);
         return($dwnDir.$file_name);
 
@@ -98,18 +106,17 @@ class sliding_mp_simpleImage {
    function save($filename, $image_type=IMAGETYPE_JPEG, $compression=100, $permissions=null) {
  
       if( $image_type == IMAGETYPE_JPEG ) {
-         imagejpeg($this->image,$filename,$compression);
+         $saved = imagejpeg($this->image,$filename,$compression);
       } elseif( $image_type == IMAGETYPE_GIF ) {
- 
          imagegif($this->image,$filename);
       } elseif( $image_type == IMAGETYPE_PNG ) {
- 
          imagepng($this->image,$filename);
       }
       if( $permissions != null) {
  
          chmod($filename,$permissions);
       }
+      
    }
    function output($image_type=IMAGETYPE_JPEG) {
  
