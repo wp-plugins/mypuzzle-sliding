@@ -1,7 +1,11 @@
 var m_dirGallery;
 var m_urlGallery;
+var m_pathGallery;
 var m_urlResize;
+var m_pathResize;
+var m_urlResizePath;
 var m_dirUpload;
+var m_urlUpload;
 var m_pathUpload;
 var m_dirPlugin;
 var m_urlUpload;
@@ -18,6 +22,7 @@ var m_flash;
 var m_closeButton;
 var m_chgImage;
 var m_doResize;
+var m_debug;
 
 function pictureChange() {
 	var e = document.getElementById("selPicture");
@@ -26,11 +31,9 @@ function pictureChange() {
 }
 
 function rewriteFlashObject(sPic) {
-//    alert(m_dirUpload);
-//    alert(m_urlUpload);
-//    alert(sPic);
 	var e = document.getElementById("flashObject");
-	var s = "<object id='myFlash' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'";
+	var s = "";
+        s += "<object id='myFlash' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'";
 	s += " codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0'";
 	s += " width='"+m_width+"' height='"+m_height+"' align='middle'>";  
 	s += "<param name='allowScriptAccess' value='sameDomain' />";
@@ -46,11 +49,7 @@ function rewriteFlashObject(sPic) {
 	s += "    allowFullScreen='false' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' />";
 	s += "</object>";	     
         s += "<div style='width:"+m_width+"px;text-align: right;font-size:12px;'><a href='http://mypuzzle.org/'>Puzzle Games</a></div>";
-//        s += "<div id='gallery' style='z-index:1;'>";
-//        s += "   <span class='button bClose'><img src='"+m_closeButton+"' /></span>";
-//        s += "   <div id='image_container' class='scroll-pane'></div>";
-//        s += "</div>";
-	e.innerHTML = s;
+        e.innerHTML = s;
 }
 
 function showGallery() {
@@ -68,25 +67,6 @@ function showGallery() {
         }
     });
 }
-function getResizedImage(selImage) {
-    
-    var sUrl = m_dirPlugin + '/getresizedImage.php?imageUrl='+m_dirGallery+'/'+selImage+'&resizePath='+m_dirUpload+'&maxWidth='+m_maxImgWidth+'&maxHeight='+m_maxImgHeight;
-    console.log(sUrl);
-    jQuery.getJSON(sUrl,function(data){
-        
-        if (data == null) return;
-
-        jQuery.each(data, function(key, val) {
-            if (key == 'file') m_myImage = val;
-            console.log(key+'-'+val);
-            //alert(m_myImage);
-            //if (key == 'width') m_width = val;
-            //if (key == 'height') m_height = val;
-        });
-        jQuery('#gallery').bPopup().close();
-        rewriteFlashObject(m_myImage);
-    });
-}
 
 function getFlashVars() {
     m_myImage = jQuery('#flashvar_startPicture').text();
@@ -97,13 +77,21 @@ function getFlashVars() {
     m_bgColor = jQuery('#flashvar_bgcolor').text();
     m_dirUpload = jQuery('#var_uploadDir').text();
     m_pathUpload = jQuery('#var_uploadPath').text();
+    m_urlUpload = jQuery('#var_uploadUrl').text();
     m_dirPlugin = jQuery('#var_plugin').text();
     m_flash = jQuery('#var_flash').text();
     m_dirGallery = jQuery('#var_galleryDir').text();
     m_urlGallery = jQuery('#var_galleryUrl').text();
+    m_pathGallery = jQuery('#var_galleryPath').text();
+    
+    
     m_urlResize = jQuery('#var_resizeUrl').text();
+    m_urlResizePath = jQuery('#var_resizePathUrl').text();
+    m_pathResize = jQuery('#var_resizePath').text();
+    
     m_closeButton = jQuery('#var_closebutton').text();
     m_doResize = jQuery('#var_doresize').text();
+    m_debug = jQuery('#var_debug').text();
 }
 
 function getData(){
@@ -141,22 +129,20 @@ function getData2(){
         jQuery('#image_container').empty();
         jQuery.each(data, function(key, val) {
             item = jQuery('#imgWrapTemplate').clone();
-            //console.log(item.html());
             item.attr({'style': ''});
             item.find('.imageTitle').text(key);
             var d = new Date();
-            //console.log(m_dirPlugin+val);
-            item.find('img').attr('src',m_dirPlugin+val);
+            item.find('img').attr('src',m_pathGallery+'/'+val);
             
-
-            item.find('img').click(function(){     //remove border on any images that might be selected     
+            item.find('img').click(function(){      
                 m_myImage = jQuery(this).attr("src");
+                //console.log(m_myImage);
                 m_chgImage = true;
                 if (m_doResize==1) {
                     var imgTitle = jQuery(this).parent().find('.imageTitle').text();
-                    //alert(imgTitle);
                     //console.log(m_dirGallery+'/'+imgTitle);
                     getResizedImage(m_dirGallery+'/'+imgTitle);
+                    
                 }
                 else
                     jQuery('#gallery').bPopup().close()
@@ -170,20 +156,17 @@ function getData2(){
 
 function getResizedImage(selImage) {
     
-    var sUrl = m_urlResize+'?imageUrl='+selImage+'&resizePath='+m_pathUpload;
+    var sUrl = m_urlResize+'?imageUrl='+selImage+'&resizePath='+m_pathResize;
     //console.log(sUrl);
     $.getJSON(sUrl,function(data){
         
         if (data == null) return;
 
         $.each(data, function(key, val) {
-            if (key == 'url') m_myImage = val;
-            if (key == 'file') m_myImage = m_dirUpload+'/'+val;
-            //if (key == 'width') m_width = val;
-            //if (key == 'height') m_height = val;
+            //console.log(key+"-"+val);
+            if (key == 'file') m_myImage = m_urlResizePath + '/' + val;
+            //console.log('m_myImage: '+m_myImage);
         });
-        //console.log(m_myImage);
         $('#gallery').bPopup().close();
-        //rewriteFlashObject(m_myImage);
     });
 }
