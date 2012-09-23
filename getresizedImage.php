@@ -13,6 +13,7 @@ if (!isset($_GET["maxHeight"])){$height = "400";} else {$height = $_GET["maxHeig
 //$myPic = $mySlider->getResizedImage(imageUrl);
 //$myTemplate->set('startPicture', $myPic);
 
+
 $file_path = parse_url( $url );
 $file_path = $_SERVER['DOCUMENT_ROOT'] . $file_path['path'];
 $orig_size = getimagesize( $url );
@@ -55,7 +56,7 @@ $upload_path = $resizePath.'/'.$newfilename;
 
 if ($newHeight == $orig_height && $newWidth = $orig_width) {
     $vt_image = array (
-            'url' => $resizePath.'/'.$file_info['filename'].$extension,
+            'url' => $resizePathUrl.'/'.$file_info['filename'].$extension,
             'file' => $file_info['filename'].$extension,
             'width' => $newWidth,
             'height' => $newHeight

@@ -7,25 +7,14 @@
 
 class sliding_mp_slider
 {
-    function getResizedImage($inputImage, $isurl)
+    function getResizedImage($inputImage, $resizePath, $resizeUrl)
     {
         $extension = end(explode('.', $inputImage));
         $myimage_filename = end(explode('/', $inputImage));
-
-        $image = new sliding_mp_simpleImage();
-        if (!$isurl)
-            $loadDir = plugins_url('img/', __FILE__);
-        else
-            $loadDir = '';
-        $uploadDir = wp_upload_dir();
-        $uplDir = $uploadDir['path'].'/';
-        $dwnDir = $uploadDir['url'].'/';
-        //echo('uplDir='.$uplDir.'<br/>');
-        //echo('dwnDir='.$dwnDir.'<br/>');
-       
-        //if (!$image->isImage($loadDir.$inputImage)) return(false);
         
-        $image->load($loadDir.$inputImage);
+        $image = new sliding_mp_simpleImage();
+        $image->load($inputImage);
+        
         //get sizes
         $height = $image->getHeight();
         $width = $image->getWidth();
@@ -33,20 +22,10 @@ class sliding_mp_slider
             $image->resizeToHeight(400);
         else           
             $image->resizeToWidth(400);
-        if ($isurl)
-            $file_name = $myimage_filename;
-        else
-            $file_name = $inputImage;
         
-//        if (!is_writable($uplDir.$file_name)) {
-//            echo('can not write: '.$uplDir.$file_name.'<br/>');
-//            return(false);
-//        } else {
-//            echo('can write: '.$uplDir.$file_name.'<br/>');
-//        }
-        
-        $image->save($uplDir.$file_name);
-        return($dwnDir.$file_name);
+        $newFileUrl = $resizeUrl.'/'.$myimage_filename;
+        $image->save($resizePath.'/'.$myimage_filename);
+        return($newFileUrl);
 
     }
 

@@ -40,8 +40,10 @@ function get_sliding_mp_options ($default = false){
             'bgcolor' => '#ffffff',
             'myimage' => '',
             'gallery' => 'wp-content/plugins/mypuzzle-sliding/gallery/',
+            'temppath' => '',
             'showlink' => '0',
-            'doresize' => '0'
+            'doresize' => '0',
+            'debug' => '0'
             );
 	if ($default) {
 		update_option('sliding_mp_set', $shc_default);
@@ -99,17 +101,19 @@ function sliding_mp($atts) {
         $bgcolor = str_replace('#', '', $bgcolor);
         if (!preg_match('/^[a-f0-9]{6}$/i', $bgcolor)) $bgcolor = 'FFFFFF';
         $myimage = $options['myimage'];
+        $tmpPath = $options['temppath'];
         $showlink = $options['showlink'];
         if (!is_numeric($showlink) || !sliding_mp_testRange(intval($showlink),0,1)) {$showlink=0;}
         $gallery = $options['gallery'];
         if (!$gallery || $gallery=='') {
             $gallery = 'wp-content/plugins/mypuzzle-sliding/gallery';
         } else {
-            if (substr( $gallery, 0, 1 ) === '/') $gallery = substr( $gallery, 1 );
-            if (substr( $gallery, strlen($gallery)-1, 1 ) === '/') $gallery = substr( $gallery, 0, strlen($gallery)-1 );
+            $gallery = sliding_mp_clearpath($gallery);
         }
         $doresize = $options['doresize'];
         if (!is_numeric($doresize) || !sliding_mp_testRange(intval($doresize),0,1)) {$doresize=0;}
+        $debug = $options['debug'];
+        if (!is_numeric($debug) || !sliding_mp_testRange(intval($debug),0,1)) {$debug=0;}
 
 	extract(shortcode_atts(array(
                 'size' => $size,
@@ -119,8 +123,10 @@ function sliding_mp($atts) {
                 'bgcolor' => $bgcolor,
                 'myimage' => $myimage,
                 'gallery' => $gallery,
+                'temppath' => $tmpPath,
 		'showlink' => $showlink,
-                'doresize' => $doresize
+                'doresize' => $doresize,
+                'debug' => $debug
 	), $atts));
         
         //get flash path
@@ -129,53 +135,64 @@ function sliding_mp($atts) {
         $galleryDir = ABSPATH . $gallery;
         $galleryUrl = plugins_url('getGallery.php', __FILE__);
         $resizeUrl = plugins_url('getresizedImage.php', __FILE__);
-        $uploadDir = wp_upload_dir();
-        $uplDir = 'wp-content/uploads'.$uploadDir['subdir'];
-        $uplPath = $uploadDir['path'];
         
-        //echo ('$gallery:'.$gallery.'<br/>');
+        $uploadDir = wp_upload_dir();
+//        if (!$tmpPath || $tmpPath == '')
+//            $tmpPath = $uploadDir['path'];
+//        
+//        echo('$tmpPath: '.$tmpPath.'<br/>');
+        //1. Abspath
+        $absPath = ABSPATH;
+        //echo('$absPath: '.$absPath.'<br/>');
+        //3. Image Name
+        $rndfile = sliding_mp_rndfile($galleryDir);
+        if (!$rndfile || $rndfile == '') $rndfile = $image;
+        //echo('$rndfile: '.$rndfile.'<br/>');
+        //4. First Image from Gallery
+        if (!$myimage || $myimage == '')
+            $myimage = $gallery.'/'.$rndfile;
+        else {
+            //check wether its an url or path
+            //check wether we deal with an url or an local-path
+            $urlar = parse_url($myimage);
+            if ($urlar['host']=='') {
+                $myimage = sliding_mp_clearpath($myimage); 
+                $isurl = false;
+            }else{
+                $isurl = true;
+            }  
+        }
+        //echo('$myimage: '.$myimage.'<br/>');
+        //5. relative Upload Directory
+        if (!$temppath || $temppath == '') {
+            $fulltemppath = $uploadDir['path'];
+            $fulltempurl = $uploadDir['url'];
+        }
+        else {
+            $fulltemppath = $absPath.'/'.sliding_mp_clearpath($temppath);
+            $fulltempurl = site_url().'/'.sliding_mp_clearpath($temppath);
+        }
+        //6. site-url
+        $siteurl = site_url();        
         
         if ($pieces == '3') $image = plugins_url('img/slide-3x3.jpg', __FILE__);
         if ($pieces == '4') $image = plugins_url('img/slide-4x4.jpg', __FILE__);
         if ($pieces == '5') $image = plugins_url('img/slide-5x5.jpg', __FILE__);
         
-        $rndfile = sliding_mp_rndfile($galleryDir);
-//        echo ('$rndfile:'.$rndfile.'<br/>');
-//        echo ('$doresize:'.$doresize.'<br/>');
-//        echo ('$myimage:'.$myimage.'<br/>');
-        
-        
-        if (!$rndfile) 
-            $rndfile = $image;
-        else
-            $rndfile = $gallery .'/'. $rndfile;
-        
         $mySlider = new sliding_mp_slider();
-        if ($myimage != '')
-        {
-            //check wether we deal with an url or an local-path
-            $urlar = parse_url($myimage);
-            if ($urlar['host']=='') $myimage = Site_url() .'/' . $myimage;
-            if ($doresize==1) {
-                $myPic = $mySlider->getResizedImage($myimage, true);
-                if (!$myPic) 
-                    return("Error: Could not load/resize the image, please check your upload permission or switch off the resize option.");
-            }
+        if ($doresize==1) {
+            if ($isurl)
+                $myPic = $mySlider->getResizedImage($myimage, $fulltemppath, $fulltempurl);
             else
-                $myPic = $myimage;
-            $showlink = 1;
-        } else {
-            if ($doresize==1) {
-                $myPic = $mySlider->getResizedImage($rndfile, true);
-                if (!$myPic) 
-                    return("Error: Could not load/resize the image, please check your upload permission or switch off the resize option.");
-            }
-            else
-                $myPic = $rndfile;
-            //$myPic = $image;
+                $myPic = $mySlider->getResizedImage($siteurl.'/'.sliding_mp_clearpath($myimage), $fulltemppath, $fulltempurl);
+            if (!$myPic) 
+                return("Error: Could not load/resize the image, please check your upload permission or switch off the resize option.");
         }
-        
-        
+        else
+            $myPic = $myimage;
+    
+        //echo('$myPic: '.$myPic.'<br/>');
+                
         $output = "<div id='flashObject' style='z-index:0;'>";
         $output .= "<object id='myFlash' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'";
 	$output .= " codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0'";
@@ -211,15 +228,22 @@ function sliding_mp($atts) {
         $output .= "<div id='flashvar_width' style='visibility:hidden;position:absolute'>".$size."</div>\r";
         $output .= "<div id='flashvar_height' style='visibility:hidden;position:absolute'>".$size."</div>\r";
         $output .= "<div id='flashvar_bgcolor' style='visibility:hidden;position:absolute'>".$bgcolor."</div>\r";
-        $output .= "<div id='var_uploadDir' style='visibility:hidden;position:absolute'>".$uplDir."</div>\r";
-        $output .= "<div id='var_uploadPath' style='visibility:hidden;position:absolute'>".$uplPath."</div>\r";
+//        $output .= "<div id='var_uploadDir' style='visibility:hidden;position:absolute'>".$tmpPath."</div>\r";
+//        $output .= "<div id='var_uploadPath' style='visibility:hidden;position:absolute'>".$uplPath."</div>\r";
+//        $output .= "<div id='var_uploadUrl' style='visibility:hidden;position:absolute'>".$uplUrl."</div>\r";
         $output .= "<div id='var_galleryUrl' style='visibility:hidden;position:absolute'>".$galleryUrl."</div>\r";
-        $output .= "<div id='var_resizeUrl' style='visibility:hidden;position:absolute'>".$resizeUrl."</div>\r";
         $output .= "<div id='var_galleryDir' style='visibility:hidden;position:absolute'>".$galleryDir."</div>\r";
+        $output .= "<div id='var_galleryPath' style='visibility:hidden;position:absolute'>".$gallery."</div>\r";
+//      
+        $output .= "<div id='var_resizeUrl' style='visibility:hidden;position:absolute'>".$resizeUrl."</div>\r";
+        $output .= "<div id='var_resizePath' style='visibility:hidden;position:absolute'>".$fulltemppath."</div>\r";
+        $output .= "<div id='var_resizePathUrl' style='visibility:hidden;position:absolute'>".$fulltempurl."</div>\r";
+        
         $output .= "<div id='var_plugin' style='visibility:hidden;position:absolute'>".$gallery."/</div>\r";
         $output .= "<div id='var_flash' style='visibility:hidden;position:absolute'>".$flash."</div>\r";
-        $output .= "<div id='var_closebutton' style='visibility:hidden;position:absolute'>".$closebuton."</div>\r";
+//        $output .= "<div id='var_closebutton' style='visibility:hidden;position:absolute'>".$closebuton."</div>\r";
         $output .= "<div id='var_doresize' style='visibility:hidden;position:absolute'>".$doresize."</div>\r";
+//        $output .= "<div id='var_debug' style='visibility:hidden;position:absolute'>".$debug."</div>\r";
         //add jscript to start gallery from flash
         $output .= "<script language='javascript'>\r";
         $output .= "function openGallery() {showGallery();}\r";
@@ -227,6 +251,11 @@ function sliding_mp($atts) {
         
         return($output);
 
+}
+function sliding_mp_clearpath($inputpath) {
+    if (substr($inputpath, 0, 1)=='/') $inputpath = substr($inputpath, 1);
+    if (substr($inputpath, strlen($inputpath)-1, 1)=='/') $inputpath = substr($inputpath, 0, strlen($inputpath)-1);
+    return($inputpath);
 }
 
 function sliding_mp_rndfile($dir) {
@@ -280,6 +309,7 @@ function sliding_mp_options_page() {
                 $newoptions['bgcolor'] = isset($_POST['bgcolor'])?$_POST['bgcolor']:$options['bgcolor'];
                 $newoptions['myimage'] = isset($_POST['myimage'])?$_POST['myimage']:$options['myimage'];
                 $newoptions['gallery'] = isset($_POST['gallery'])?$_POST['gallery']:$options['gallery'];
+                $newoptions['temppath'] = isset($_POST['temppath'])?$_POST['temppath']:$options['temppath'];
                 $newoptions['doresize'] = isset($_POST['doresize'])?$_POST['doresize']:$options['doresize'];
                 
                 if ( $options != $newoptions ) {
@@ -306,6 +336,7 @@ function sliding_mp_options_page() {
         if (!preg_match('/^[a-f0-9]{6}$/i', $bgcolor)) $bgcolor = 'FFFFFF';
         $myimage = $options['myimage'];
         $gallery = $options['gallery'];
+        $temppath = $options['temppath'];
         $doresize = $options['doresize'];
         if (!is_numeric($doresize) || !sliding_mp_testRange(intval($doresize),0,1)) {$doresize=0;}
         
@@ -364,7 +395,7 @@ function sliding_mp_options_page() {
                             <option value="1"<?php echo ($showhints == 1 ? " selected" : "") ?>><?php echo _e("Yes") ?></option>
                     </select>
                 </td>
-                <td width="200"></td>
+                <td width="200">This adds numbers to each corner of the image slices to help solve the puzzle.</td>
             </tr>
             <tr>
                 <td width="100">
@@ -383,7 +414,7 @@ function sliding_mp_options_page() {
                     <input style="width: 200px" type="text" name="myimage" value="<?php echo ($myimage); ?>">
                 </td>
                 <td width="700">
-                    e.g. "wp-content/uploads/myimage.jpg" or "http://mydomain.com/myimage.jpg" (requires url access)
+                    Leave blank to have a random image displayed on page load, or point to a static image.
                 </td>
             </tr>
             <tr>
@@ -394,11 +425,18 @@ function sliding_mp_options_page() {
                     <input style="width: 200px" type="text" name="gallery" value="<?php echo ($gallery); ?>">
                 </td>
                 <td width="700">
-                    e.g. "<?php 
-                            $uploadDir = wp_upload_dir();
-                            $uplDir = 'wp-content/uploads'.$uploadDir['subdir'];
-                            echo ($uplDir.'" - Leave blank for MyPuzzle Images Gallery.'); 
-                        ?>
+                    Point to your own image directory or leave blank for MyPuzzle Images Gallery. 
+                </td>
+            </tr>
+            <tr>
+                <td width="100">
+                    Temporary Path
+                </td>
+                <td>
+                    <input style="width: 200px" type="text" name="temppath" value="<?php echo ($temppath); ?>">
+                </td>
+                <td width="700">
+                    Point to a temporary and writable directory for images to be resized. Leave blank for default upload.
                 </td>
             </tr>
             <tr>
@@ -412,7 +450,7 @@ function sliding_mp_options_page() {
                     </select>
                 </td>
                 <td width="500">
-                    Saves a copy in your current upload folder. Images should be around 400x400 px.
+                    Saves a resized copy in the image directory you designated above. 
                 </td>
             </tr>
         </table>
