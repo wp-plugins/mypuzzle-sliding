@@ -45,6 +45,7 @@ class sliding_mp_simpleImage {
    var $image_type;
  
    function load($filename) {
+      $filename = str_replace(' ', '%20', $filename);
       $image_info = getimagesize($filename);
       $this->image_type = $image_info[2];
       if( $this->image_type == IMAGETYPE_JPEG ) {

@@ -143,7 +143,6 @@ function sliding_mp($atts) {
 //        echo('$tmpPath: '.$tmpPath.'<br/>');
         //1. Abspath
         $absPath = ABSPATH;
-        //echo('$absPath: '.$absPath.'<br/>');
         //3. Image Name
         $rndfile = sliding_mp_rndfile($galleryDir);
         if (!$rndfile || $rndfile == '') $rndfile = $image;
@@ -190,27 +189,25 @@ function sliding_mp($atts) {
         }
         else
             $myPic = $myimage;
-    
-        //echo('$myPic: '.$myPic.'<br/>');
                 
         $output = "<div id='flashObject' style='z-index:0;'>";
         $output .= "<object id='myFlash' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'";
 	$output .= " codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0'";
-	$output .= " width='".$size."' height='".$h."' align='middle'>\r";  
-	$output .= "<param name='allowScriptAccess' value='sameDomain' />\r";
-	$output .= "<param name='allowFullScreen' value='false' />\r";
-	$output .= "<param name='movie' value='".$flash."' />\r";
-	$output .= "<param name='flashvars' value='myHint=".$showhints."&myPieces=".$pieces."&myPic=" . $myPic . "' />\r";
-	$output .= "<param name='quality' value='high' />\r";
-	$output .= "<param name='menu' value='false' />\r";
-	$output .= "<param name='bgcolor' value='".$bgcolor."' />\r";
-        $output .= "<param name='wmode' value='transparent' />\r";
+	$output .= " width='".$size."' height='".$h."' align='middle'>";  
+	$output .= "<param name='allowScriptAccess' value='sameDomain' />";
+	$output .= "<param name='allowFullScreen' value='false' />";
+	$output .= "<param name='movie' value='".$flash."' />";
+	$output .= "<param name='flashvars' value='myHint=".$showhints."&myPieces=".$pieces."&myPic=" . $myPic . "' />";
+	$output .= "<param name='quality' value='high' />";
+	$output .= "<param name='menu' value='false' />";
+	$output .= "<param name='bgcolor' value='".$bgcolor."' />";
+        $output .= "<param name='wmode' value='transparent' />";
 	$output .= "<embed src='".$flash."' flashvars='myHint=".$showhints."&myPieces=".$pieces."&myPic=" . $myPic . "' quality='high' bgcolor='".$bgcolor."'  swLiveConnect='true' ";
 	$output .= "    width='".$size."' height='".$h."' name='sliding' menu='false' align='middle' allowScriptAccess='sameDomain' ";
-	$output .= "    allowFullScreen='false' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' />\r";
-	$output .= "</object>\r";
+	$output .= "    allowFullScreen='false' type='application/x-shockwave-flash' pluginspage='http://www.macromedia.com/go/getflashplayer' />";
+	$output .= "</object>";
         $output .= "<div style=\"width:".$size."px;text-align: right;font-size:12px;\"><a href='http://mypuzzle.org/'>Puzzle Games</a></div>";
-        $output .= "</div>\r";
+        $output .= "</div>";
         //add diff for the image gallery
         $output .= "<div id='gallery' style='z-index:1;'>\r";
         $output .= "    <span class='button bClose'><img src='".$closebuton."' /></span>\r";
@@ -226,7 +223,7 @@ function sliding_mp($atts) {
         $output .= "<div id='flashvar_pieces' style='visibility:hidden;position:absolute'>".$pieces."</div>\r";
         $output .= "<div id='flashvar_startPicture' style='visibility:hidden;position:absolute'>".$myPic."</div>\r";
         $output .= "<div id='flashvar_width' style='visibility:hidden;position:absolute'>".$size."</div>\r";
-        $output .= "<div id='flashvar_height' style='visibility:hidden;position:absolute'>".$size."</div>\r";
+        $output .= "<div id='flashvar_height' style='visibility:hidden;position:absolute'>".$h."</div>\r";
         $output .= "<div id='flashvar_bgcolor' style='visibility:hidden;position:absolute'>".$bgcolor."</div>\r";
 //        $output .= "<div id='var_uploadDir' style='visibility:hidden;position:absolute'>".$tmpPath."</div>\r";
 //        $output .= "<div id='var_uploadPath' style='visibility:hidden;position:absolute'>".$uplPath."</div>\r";
@@ -274,9 +271,8 @@ function sliding_mp_rndfile($dir) {
             }
         }
     }
-    $num = rand(0, count($listFile) );
-
-    return($listFile[$num]); 
+    $num = rand(0, count($listFile)-1 );
+    return($listFile[$num]);
 }
 /**
  * Settings
