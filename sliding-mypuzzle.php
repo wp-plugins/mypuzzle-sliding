@@ -65,8 +65,6 @@ add_shortcode('sliding-mp', 'sliding_mp');
 
 
 function sliding_mp_jscripts() {
-    wp_deregister_script( 'jquery' );
-    wp_register_script( 'jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js');
     wp_enqueue_script( 'jquery' );
     
     //my jscripts
@@ -137,16 +135,13 @@ function sliding_mp($atts) {
         $resizeUrl = plugins_url('getresizedImage.php', __FILE__);
         
         $uploadDir = wp_upload_dir();
-//        if (!$tmpPath || $tmpPath == '')
-//            $tmpPath = $uploadDir['path'];
-//        
-//        echo('$tmpPath: '.$tmpPath.'<br/>');
+
         //1. Abspath
         $absPath = ABSPATH;
         //3. Image Name
         $rndfile = sliding_mp_rndfile($galleryDir);
         if (!$rndfile || $rndfile == '') $rndfile = $image;
-        //echo('$rndfile: '.$rndfile.'<br/>');
+
         //4. First Image from Gallery
         if (!$myimage || $myimage == '')
             $myimage = $gallery.'/'.$rndfile;
@@ -161,7 +156,6 @@ function sliding_mp($atts) {
                 $isurl = true;
             }  
         }
-        //echo('$myimage: '.$myimage.'<br/>');
         //5. relative Upload Directory
         if (!$temppath || $temppath == '') {
             $fulltemppath = $uploadDir['path'];
@@ -188,7 +182,7 @@ function sliding_mp($atts) {
                 return("Error: Could not load/resize the image, please check your upload permission or switch off the resize option.");
         }
         else
-            $myPic = $myimage;
+            $myPic = site_url() . '/'. $myimage;
                 
         $output = "<div id='flashObject' style='z-index:0;'>";
         $output .= "<object id='myFlash' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'";
@@ -225,22 +219,16 @@ function sliding_mp($atts) {
         $output .= "<div id='flashvar_width' style='visibility:hidden;position:absolute'>".$size."</div>\r";
         $output .= "<div id='flashvar_height' style='visibility:hidden;position:absolute'>".$h."</div>\r";
         $output .= "<div id='flashvar_bgcolor' style='visibility:hidden;position:absolute'>".$bgcolor."</div>\r";
-//        $output .= "<div id='var_uploadDir' style='visibility:hidden;position:absolute'>".$tmpPath."</div>\r";
-//        $output .= "<div id='var_uploadPath' style='visibility:hidden;position:absolute'>".$uplPath."</div>\r";
-//        $output .= "<div id='var_uploadUrl' style='visibility:hidden;position:absolute'>".$uplUrl."</div>\r";
         $output .= "<div id='var_galleryUrl' style='visibility:hidden;position:absolute'>".$galleryUrl."</div>\r";
         $output .= "<div id='var_galleryDir' style='visibility:hidden;position:absolute'>".$galleryDir."</div>\r";
         $output .= "<div id='var_galleryPath' style='visibility:hidden;position:absolute'>".$gallery."</div>\r";
-//      
         $output .= "<div id='var_resizeUrl' style='visibility:hidden;position:absolute'>".$resizeUrl."</div>\r";
         $output .= "<div id='var_resizePath' style='visibility:hidden;position:absolute'>".$fulltemppath."</div>\r";
         $output .= "<div id='var_resizePathUrl' style='visibility:hidden;position:absolute'>".$fulltempurl."</div>\r";
-        
         $output .= "<div id='var_plugin' style='visibility:hidden;position:absolute'>".$gallery."/</div>\r";
         $output .= "<div id='var_flash' style='visibility:hidden;position:absolute'>".$flash."</div>\r";
-//        $output .= "<div id='var_closebutton' style='visibility:hidden;position:absolute'>".$closebuton."</div>\r";
         $output .= "<div id='var_doresize' style='visibility:hidden;position:absolute'>".$doresize."</div>\r";
-//        $output .= "<div id='var_debug' style='visibility:hidden;position:absolute'>".$debug."</div>\r";
+        $output .= "<div id='var_siteurl' style='visibility:hidden;position:absolute'>".site_url()."</div>\r";
         //add jscript to start gallery from flash
         $output .= "<script language='javascript'>\r";
         $output .= "function openGallery() {showGallery();}\r";
