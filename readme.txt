@@ -4,7 +4,7 @@ Donate link: http://mypuzzle.org
 Tags: Sliding, mypuzzle, puzzle, sliding puzzle, puzzle games, slide puzzle
 Requires at least: 2.5
 Tested up to: 3.4.1
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,3 +58,7 @@ Visit <a href="http://mypuzzle.org/sliding/wordpress.html">Wordpress Sliding Plu
  = 1.1.0 =  
  * Added Gallery Feature for MyPuzzle Image Gallery
  * Added Gallery Feature for Custom Image Path
+
+ = 1.1.1 =
+ * Fixed jQuery Wordpress default
+ * Fixed custom path handling
