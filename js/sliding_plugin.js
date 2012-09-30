@@ -23,6 +23,7 @@ var m_closeButton;
 var m_chgImage;
 var m_doResize;
 var m_debug;
+var m_siteurl;
 
 function pictureChange() {
 	var e = document.getElementById("selPicture");
@@ -92,6 +93,7 @@ function getFlashVars() {
     m_closeButton = jQuery('#var_closebutton').text();
     m_doResize = jQuery('#var_doresize').text();
     m_debug = jQuery('#var_debug').text();
+    m_siteurl = jQuery('#var_siteurl').text();
 }
 
 function getData(){
@@ -132,7 +134,7 @@ function getData2(){
             item.attr({'style': ''});
             item.find('.imageTitle').text(key);
             var d = new Date();
-            item.find('img').attr('src',m_pathGallery+'/'+val);
+            item.find('img').attr('src',m_siteurl + '/' + m_pathGallery+'/'+val);
             
             item.find('img').click(function(){      
                 m_myImage = jQuery(this).attr("src");
@@ -158,15 +160,15 @@ function getResizedImage(selImage) {
     
     var sUrl = m_urlResize+'?imageUrl='+selImage+'&resizePath='+m_pathResize;
     //console.log(sUrl);
-    $.getJSON(sUrl,function(data){
+    jQuery.getJSON(sUrl,function(data){
         
         if (data == null) return;
 
-        $.each(data, function(key, val) {
+        jQuery.each(data, function(key, val) {
             //console.log(key+"-"+val);
             if (key == 'file') m_myImage = m_urlResizePath + '/' + val;
             //console.log('m_myImage: '+m_myImage);
         });
-        $('#gallery').bPopup().close();
+        jQuery('#gallery').bPopup().close();
     });
 }
