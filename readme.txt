@@ -62,3 +62,7 @@ Visit <a href="http://mypuzzle.org/sliding/wordpress.html">Wordpress Sliding Plu
  = 1.1.1 =
  * Fixed jQuery Wordpress default
  * Fixed custom path handling
+
+= 1.1.2 =
+ * Fixed resize image function for new php version
+ * Fixed remove folders from gallery

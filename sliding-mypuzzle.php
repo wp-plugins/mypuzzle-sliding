@@ -3,7 +3,7 @@
 Plugin Name: MyPuzzle - Sliding
 Plugin URI: http://mypuzzle.org/sliding/wordpress.html
 Description: Include a mypuzzle.org Sliding Puzzle in your blogs with just one shortcode. 
-Version: 1.1.1
+Version: 1.1.2
 Author: tom@mypuzzle.org
 Author URI: http://mypuzzle.org/
 Notes    : Visible Copyrights and Hyperlink to mypuzzle.org required
