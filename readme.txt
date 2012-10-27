@@ -43,6 +43,9 @@ Examples:
 - [sliding-mp size=460 pieces=3 showhints=0 bgcolor='#f4f4f4' myimage='http://mypuzzle.org/jigsaw/img/animals-bunny.jpg']
 - [sliding-mp size=460 pieces=4 showhints=0 bgcolor='#f4f4f4' gallery='wp-content/uploads/myimages']
 
+When using the resize option is not possible you have to resize the images yourself.
+The best size for the puzzle is about maximum height of 400 and maximum width of 400.
+So depending on the height/width ration you have to resize your image to fit one side the maximum value while beeing less on the other.
 
 Visit <a href="http://mypuzzle.org/sliding/wordpress.html">Wordpress Sliding Plugin</a>
 
