@@ -3,7 +3,7 @@
 Plugin Name: MyPuzzle - Sliding
 Plugin URI: http://mypuzzle.org/sliding/wordpress.html
 Description: Include a mypuzzle.org Sliding Puzzle in your blogs with just one shortcode. 
-Version: 1.1.2
+Version: 1.1.3
 Author: tom@mypuzzle.org
 Author URI: http://mypuzzle.org/
 Notes    : Visible Copyrights and Hyperlink to mypuzzle.org required
@@ -149,6 +149,7 @@ function sliding_mp($atts) {
             //check wether its an url or path
             //check wether we deal with an url or an local-path
             $urlar = parse_url($myimage);
+            //echo('test: '.$urlar['host']);
             if ($urlar['host']=='') {
                 $myimage = sliding_mp_clearpath($myimage); 
                 $isurl = false;
@@ -182,7 +183,12 @@ function sliding_mp($atts) {
                 return("Error: Could not load/resize the image, please check your upload permission or switch off the resize option.");
         }
         else
-            $myPic = site_url() . '/'. $myimage;
+        {
+            if ($isurl)
+                $myPic = $myimage;
+            else
+                $myPic = site_url() . '/'. $myimage;
+        }
                 
         $output = "<div id='flashObject' style='z-index:0;'>";
         $output .= "<object id='myFlash' classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000'";
